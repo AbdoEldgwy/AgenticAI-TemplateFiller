@@ -18,6 +18,9 @@ cnv = CnvBuilder(
 # Cache for frequently asked questions (provides API calls)
 _question_cache = {}
 
+import os
+print("API KEY EXISTS? ", os.getenv("OPENAI_API_KEY") is not None)
+
 # ================================
 def askAI(question: str) -> str:
     """
