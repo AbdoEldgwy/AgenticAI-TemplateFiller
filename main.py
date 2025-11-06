@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 # from fastapi.staticfiles import StaticFiles
 # import uvicorn
@@ -40,7 +40,7 @@ async def home(request: Request):
         }
     )
 
-@app.post("/", response_class=HTMLResponse)
+@app.post("/")
 async def chat(request: Request, question: str = Form(...)):
     """
     to send a question to the chatbot and get the answer
@@ -48,17 +48,11 @@ async def chat(request: Request, question: str = Form(...)):
         user question 
     """
     answer = askAI(question)
-    
+
     history = cnv.get_past_conversation()
     
-    return templates.TemplateResponse(
-        "chat.html",
-        {
-            "request": request,
-            "history": history,
-            "answer": answer 
-        }
-    )
+    return RedirectResponse(url="/", status_code=303)
+
  
 @app.get("/services")
 async def get_services():

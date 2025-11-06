@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ذكاء القوالب - AI Chat</title>
+    <title>الذكاء الخدمي - AI Chat</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 10px 40px rgba(0,0,0,0.2);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.3);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
@@ -17,6 +26,28 @@
             min-height: 100vh;
             padding: 20px;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: backgroundMove 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
         }
 
         .header {
@@ -24,39 +55,226 @@
             padding: 25px 0;
             color: white;
             margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 600;
+            font-size: 2.2rem;
+            font-weight: 700;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .header h1 span:first-child {
+            animation: rotate 3s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
         }
 
         .header p {
             opacity: 0.95;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 0.6s ease 0.4s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .btn-control {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #ff4d4d 0%, #f06292 100%);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 77, 77, 0.4);
+        }
+
+        .btn-toggle {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .services-card {
+            width: 260px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            max-height: 500px;
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+            animation: slideInLeft 0.6s ease;
+            transition: var(--transition);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .services-card.hidden {
+            display: none;
+        }
+
+        .services-card h3 {
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .service-item {
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 13px;
+            transition: var(--transition);
+            animation: fadeInScale 0.4s ease backwards;
+        }
+
+        .service-item:nth-child(1) { animation-delay: 0.1s; }
+        .service-item:nth-child(2) { animation-delay: 0.2s; }
+        .service-item:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .service-item:hover {
+            transform: translateX(-5px);
+            box-shadow: var(--shadow-sm);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .service-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .chat-wrapper {
+            flex: 1;
+            animation: slideInRight 0.6s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .chat-container {
-            max-width: 800px;
-            margin: 0 auto 140px auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-lg);
             padding: 25px;
             min-height: 500px;
-            max-height: calc(100vh - 280px);
+            max-height: calc(100vh - 320px);
             overflow-y: auto;
             scroll-behavior: smooth;
+            margin-bottom: 20px;
         }
 
         .chat-container::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         .chat-container::-webkit-scrollbar-track {
@@ -65,24 +283,28 @@
         }
 
         .chat-container::-webkit-scrollbar-thumb {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
 
         .message-wrapper {
             display: flex;
-            margin-bottom: 16px;
-            animation: slideIn 0.3s ease-out;
+            margin-bottom: 20px;
+            animation: slideInMessage 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes slideIn {
+        @keyframes slideInMessage {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(15px) scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -96,132 +318,152 @@
 
         .bubble {
             max-width: 75%;
-            padding: 14px 18px;
+            padding: 16px 20px;
             border-radius: 18px;
-            line-height: 1.6;
+            line-height: 1.7;
             font-size: 15px;
             position: relative;
             word-wrap: break-word;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: transform 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
         }
 
         .bubble:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
 
         .user-bubble {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
             border-bottom-right-radius: 4px;
         }
 
         .ai-bubble {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             color: #2d3748;
             border: 1px solid #e2e8f0;
             border-bottom-left-radius: 4px;
         }
 
         .message-avatar {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            margin: 0 10px;
+            font-size: 20px;
+            margin: 0 12px;
             flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .message-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .user-avatar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
             order: -1;
         }
 
         .ai-avatar {
-            background: #e2e8f0;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
             order: 1;
         }
 
         .empty-state {
             text-align: center;
             color: #a0aec0;
-            padding: 60px 20px;
+            padding: 80px 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .empty-state svg {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 20px;
-            opacity: 0.5;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            opacity: 0.6;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .empty-state h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
             color: #718096;
         }
 
         .input-container {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 800px;
-            z-index: 1000;
+            position: relative;
+            width: 100%;
         }
 
         .input-box {
             background: white;
-            padding: 16px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 18px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
             display: flex;
             gap: 12px;
             align-items: center;
+            transition: var(--transition);
+        }
+
+        .input-box:focus-within {
+            box-shadow: 0 12px 48px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
         }
 
         .input-box input {
             flex: 1;
-            padding: 14px 18px;
+            padding: 16px 20px;
             border-radius: 12px;
             border: 2px solid #e2e8f0;
             font-size: 15px;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             font-family: inherit;
         }
 
         .input-box input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .input-box button {
-            padding: 14px 28px;
+            padding: 16px 32px;
             border-radius: 12px;
             border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             white-space: nowrap;
+            box-shadow: var(--shadow-sm);
         }
 
-        .input-box button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .input-box button:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
         }
 
-        .input-box button:active {
-            transform: translateY(0);
+        .input-box button:active:not(:disabled) {
+            transform: translateY(-1px) scale(1.02);
         }
 
         .input-box button:disabled {
@@ -232,7 +474,7 @@
         .loading {
             display: none;
             justify-content: center;
-            padding: 10px;
+            padding: 16px;
         }
 
         .loading.active {
@@ -241,82 +483,136 @@
 
         .loading-dots {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .loading-dots span {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--primary-gradient);
             animation: bounce 1.4s infinite ease-in-out;
         }
 
-        .loading-dots span:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-
-        .loading-dots span:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-        .services-card {
-            position: fixed;
-            top: 140px;
-            left: 20px;
-            width: 220px;
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .services-card h3 {
-            margin-bottom: 12px;
-            font-size: 1rem;
-            color: #2d3748;
-        }
-
-        .service-item {
-            padding: 8px;
-            background: #f9fafb;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid #e2e8f0;
-            font-size: 14px;
-        }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
 
         @keyframes bounce {
             0%, 80%, 100% {
                 transform: scale(0);
+                opacity: 0.5;
             }
             40% {
                 transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .status-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .status-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .services-card {
+                width: 100%;
+                max-height: 300px;
+                position: relative;
+                top: 0;
             }
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .controls-bar {
+                flex-wrap: wrap;
             }
 
             .chat-container {
                 padding: 15px;
-                margin-bottom: 120px;
+                max-height: calc(100vh - 380px);
             }
 
             .bubble {
                 max-width: 85%;
                 font-size: 14px;
+                padding: 12px 16px;
+            }
+
+            .message-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
             }
 
             .input-box {
                 padding: 12px;
             }
 
+            .input-box input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
             .input-box button {
                 padding: 12px 20px;
                 font-size: 14px;
+            }
+
+            .services-card {
+                padding: 15px;
             }
         }
     </style>
@@ -328,64 +624,90 @@
             <span>🤖</span>
             <span>الذكاء الخدمي</span>
         </h1>
-        <p>مساعدك الذكي على مدار الساعة</p>
+        <p>مساعدك الذكي على مدار الساعة ⚡</p>
     </div>
 
-    <div class="services-card" id="servicesCard">
-        <h3>الخدمات الحالية</h3>
-        <div id="servicesList"></div>
+    <div class="controls-bar">
+        <button onclick="clearHistory()" class="btn-control btn-clear">
+            🗑️ مسح المحادثة
+        </button>
+        <button onclick="toggleServices()" class="btn-control btn-toggle" id="toggleBtn">
+            📋 إخفاء الخدمات
+        </button>
     </div>
 
-    <div class="chat-container" id="chatContainer">
-        {% if not history %}
-        <div class="empty-state">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-            </svg>
-            <h3>ابدأ محادثة جديدة</h3>
-            <p>اكتب رسالتك في الأسفل للبدء</p>
-        </div>
-        {% else %}
-            {% for item in history %}
-            <div class="message-wrapper {{ item.role }}">
-                <div class="message-avatar {{ item.role }}-avatar">
-                    {% if item.role == "user" %}
-                    👤
-                    {% else %}
-                    🤖
-                    {% endif %}
-                </div>
-                <div class="bubble {{ item.role }}-bubble">
-                    {{ item.content }}
+    <div class="main-wrapper">
+        <div class="services-card" id="servicesCard">
+            <h3>
+                <span>📦</span>
+                الخدمات المتاحة
+            </h3>
+            <div id="servicesList">
+                <div style="text-align: center; padding: 20px; color: #a0aec0;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
+                    جاري التحميل...
                 </div>
             </div>
-            {% endfor %}
-        {% endif %}
+        </div>
 
-        <div class="loading" id="loadingIndicator">
-            <div class="loading-dots">
-                <span></span>
-                <span></span>
-                <span></span>
+        <div class="chat-wrapper">
+            <div class="chat-container" id="chatContainer">
+                {% if not history %}
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <h3>ابدأ محادثة جديدة</h3>
+                    <p>اكتب رسالتك في الأسفل للبدء 💬</p>
+                </div>
+                {% else %}
+                    {% for item in history %}
+                    <div class="message-wrapper {{ item.role }}">
+                        <div class="message-avatar {{ item.role }}-avatar">
+                            {% if item.role == "user" %}
+                            👤
+                            {% else %}
+                            🤖
+                            {% endif %}
+                        </div>
+                        <div class="bubble {{ item.role }}-bubble">
+                            {{ item.content }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="loading" id="loadingIndicator">
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <form method="post" class="input-box" id="chatForm">
+                    <input 
+                        type="text" 
+                        name="question" 
+                        id="questionInput"
+                        placeholder="اكتب رسالتك هنا..." 
+                        required
+                        autofocus
+                        autocomplete="off"
+                    >
+                    <button type="submit" id="sendButton">
+                        إرسال ✈️
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <div class="input-container">
-        <form method="post" class="input-box" id="chatForm">
-            <input 
-                type="text" 
-                name="question" 
-                id="questionInput"
-                placeholder="اكتب رسالتك هنا..." 
-                required
-                autofocus
-                autocomplete="off"
-            >
-            <button type="submit" id="sendButton">
-                إرسال ✈️
-            </button>
-        </form>
+    <div class="status-indicator" id="statusIndicator">
+        <div class="status-dot"></div>
+        <span>متصل</span>
     </div>
 
     <script>
@@ -404,7 +726,6 @@
                 sendButton.disabled = true;
                 loadingIndicator.classList.add('active');
                 
-                // Scroll to show loading indicator
                 setTimeout(() => {
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                 }, 100);
@@ -414,21 +735,100 @@
         // Auto-focus input after page load
         window.addEventListener('load', function() {
             input.focus();
+            
+            // Show status indicator
+            setTimeout(() => {
+                document.getElementById('statusIndicator').classList.add('show');
+            }, 1000);
         });
-    </script>
 
-    <script>
-    async function loadServices(){
-        const resp = await fetch("/services");
-        const data = await resp.json();
-        let html = "";
-        data.forEach(s=>{
-            html += `<div class="service-item">#${s.index} - ${s.name} : ${s.price}</div>`;
+        // Load services with smart caching
+        let cachedServices = null;
+        
+        async function loadServices(){
+            try {
+                const resp = await fetch("/services");
+                const data = await resp.json();
+                
+                // Only update if data actually changed
+                const dataString = JSON.stringify(data);
+                if (cachedServices === dataString) {
+                    return; // Skip render if no changes
+                }
+                cachedServices = dataString;
+                
+                let html = "";
+                
+                if (data && data.length > 0) {
+                    data.forEach((s, index) => {
+                        html += `
+                            <div class="service-item">
+                                <strong>#${s.index} - ${s.name}</strong>
+                                <div style="color: #667eea; font-weight: 600;">: ${s.price} ريال</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<div style="text-align: center; padding: 20px; color: #a0aec0;">لا توجد خدمات متاحة</div>';
+                }
+                
+                document.getElementById("servicesList").innerHTML = html;
+            } catch (error) {
+                console.error('Error loading services:', error);
+                document.getElementById("servicesList").innerHTML = 
+                    '<div style="text-align: center; padding: 20px; color: #ff4d4d;">خطأ في تحميل الخدمات</div>';
+            }
+        }
+
+        // Load once on page load
+        loadServices();
+        
+        // Then check for updates every 5 seconds
+        setInterval(loadServices, 5000);
+
+        // Clear history
+        async function clearHistory() {
+            if (!confirm("هل أنت متأكد من مسح كل المحادثات؟ 🗑️")) return;
+            
+            try {
+                await fetch("/clear", { method: "POST" });
+                window.location.href = "/";
+            } catch (error) {
+                alert("حدث خطأ أثناء المسح");
+                console.error(error);
+            }
+        }
+
+        // Toggle services panel
+        let servicesVisible = true;
+        function toggleServices() {
+            const card = document.getElementById('servicesCard');
+            const btn = document.getElementById('toggleBtn');
+            servicesVisible = !servicesVisible;
+            
+            if (servicesVisible) {
+                card.classList.remove('hidden');
+                btn.innerHTML = '📋 إخفاء الخدمات';
+            } else {
+                card.classList.add('hidden');
+                btn.innerHTML = '📋 إظهار الخدمات';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K to focus input
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                input.focus();
+            }
+            
+            // Ctrl/Cmd + L to clear (with confirmation)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                e.preventDefault();
+                clearHistory();
+            }
         });
-        document.getElementById("servicesList").innerHTML = html;
-    }
-    setInterval(loadServices,1500);
-    loadServices()
     </script>
 
 </body>
