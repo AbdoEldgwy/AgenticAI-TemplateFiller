@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ذكاء القوالب - AI Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            padding: 25px 0;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 0.95rem;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto 140px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 25px;
+            min-height: 500px;
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .message-wrapper {
+            display: flex;
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-wrapper.user {
+            justify-content: flex-start;
+        }
+
+        .message-wrapper.ai {
+            justify-content: flex-end;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            line-height: 1.6;
+            font-size: 15px;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .user-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-bubble {
+            background: #f8f9fa;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin: 0 10px;
+            flex-shrink: 0;
+        }
+
+        .user-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            order: -1;
+        }
+
+        .ai-avatar {
+            background: #e2e8f0;
+            order: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #718096;
+        }
+
+        .input-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 800px;
+            z-index: 1000;
+        }
+
+        .input-box {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .input-box input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .input-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-box button {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .input-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-box button:active {
+            transform: translateY(0);
+        }
+
+        .input-box button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        .services-card {
+            position: fixed;
+            top: 140px;
+            left: 20px;
+            width: 220px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .services-card h3 {
+            margin-bottom: 12px;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+
+        .service-item {
+            padding: 8px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .chat-container {
+                padding: 15px;
+                margin-bottom: 120px;
+            }
+
+            .bubble {
+                max-width: 85%;
+                font-size: 14px;
+            }
+
+            .input-box {
+                padding: 12px;
+            }
+
+            .input-box button {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>
+            <span>🤖</span>
+            <span>الذكاء الخدمي</span>
+        </h1>
+        <p>مساعدك الذكي على مدار الساعة</p>
+    </div>
+
+    <div class="services-card" id="servicesCard">
+        <h3>الخدمات الحالية</h3>
+        <div id="servicesList"></div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        {% if not history %}
+        <div class="empty-state">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <h3>ابدأ محادثة جديدة</h3>
+            <p>اكتب رسالتك في الأسفل للبدء</p>
+        </div>
+        {% else %}
+            {% for item in history %}
+            <div class="message-wrapper {{ item.role }}">
+                <div class="message-avatar {{ item.role }}-avatar">
+                    {% if item.role == "user" %}
+                    👤
+                    {% else %}
+                    🤖
+                    {% endif %}
+                </div>
+                <div class="bubble {{ item.role }}-bubble">
+                    {{ item.content }}
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="loading" id="loadingIndicator">
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-container">
+        <form method="post" class="input-box" id="chatForm">
+            <input 
+                type="text" 
+                name="question" 
+                id="questionInput"
+                placeholder="اكتب رسالتك هنا..." 
+                required
+                autofocus
+                autocomplete="off"
+            >
+            <button type="submit" id="sendButton">
+                إرسال ✈️
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Auto-scroll to bottom on page load
+        const chatContainer = document.getElementById('chatContainer');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Handle form submission
+        const form = document.getElementById('chatForm');
+        const input = document.getElementById('questionInput');
+        const sendButton = document.getElementById('sendButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        form.addEventListener('submit', function() {
+            if (input.value.trim()) {
+                sendButton.disabled = true;
+                loadingIndicator.classList.add('active');
+                
+                // Scroll to show loading indicator
+                setTimeout(() => {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 100);
+            }
+        });
+
+        // Auto-focus input after page load
+        window.addEventListener('load', function() {
+            input.focus();
+        });
+    </script>
+
+    <script>
+    async function loadServices(){
+        const resp = await fetch("/services");
+        const data = await resp.json();
+        let html = "";
+        data.forEach(s=>{
+            html += `<div class="service-item">#${s.index} - ${s.name} : ${s.price}</div>`;
+        });
+        document.getElementById("servicesList").innerHTML = html;
+    }
+    setInterval(loadServices,1500);
+    loadServices()
+    </script>
+
+</body>
+</html>

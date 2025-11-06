@@ -1,0 +1,11 @@
+__pycache__
+.env
+*.ipynb
+v313env
+venv0
+original/
+wa/
+python-whatsapp-bot/
+conversation_metadata.json
+history.json
+to-do.txt
